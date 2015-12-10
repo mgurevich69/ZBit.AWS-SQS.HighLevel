@@ -1,5 +1,5 @@
 # ZBit.AWS-SQS.HighLevel
-Higher Level Library for Amazon SQS.
+Higher Level Library for Amazon SQS (Simple Queue Service).
 
 * Allows you to Subscribe to a queue instead of polling it in a busy loop. That is, you provide a delegate function in “Subscribe” method and this callback will be invoked every time a new message is added to the queue. This library will also handle serialization and deserialization for your objects that you put in the queue.
 
