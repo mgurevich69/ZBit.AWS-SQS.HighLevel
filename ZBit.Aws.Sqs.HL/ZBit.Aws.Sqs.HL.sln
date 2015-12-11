@@ -7,7 +7,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZBit.Aws.Sqs.HL", "ZBit.Aws
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionFolder", "SolutionFolder", "{CEB22B79-6E49-4C30-8CC5-4C7972B46A2D}"
 	ProjectSection(SolutionItems) = preProject
+		ZBit.Aws.Sqs.HL\build_nuget.bat = ZBit.Aws.Sqs.HL\build_nuget.bat
 		..\README.md = ..\README.md
+		ZBit.Aws.Sqs.HL\ZBit.Aws.Sqs.HL.nuspec = ZBit.Aws.Sqs.HL\ZBit.Aws.Sqs.HL.nuspec
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZBit.Aws.Sqs.HLTests", "ZBit.Aws.Sqs.HLTests\ZBit.Aws.Sqs.HLTests.csproj", "{A6B3457F-067C-4211-87AE-2F8F896AB05E}"
