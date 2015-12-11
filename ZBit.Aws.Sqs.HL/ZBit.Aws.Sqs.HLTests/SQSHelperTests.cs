@@ -25,10 +25,9 @@ namespace ZBit.Aws.Sqs.HL.Tests {
 
 		[TestMethod()]
 		public void SubscribeTest() {
-			SQSHelper q = new SQSHelper();
 			m_iTotalCallCount = 0;
 			m_iCallCountFor2 = 0;
-			q.Subscribe<MyType>("Utest1Q", QueueMsgProcessor);
+			var q = SQSHelper.Subscribe<MyType>(QueueMsgProcessor, "Utest1Q");
 			SQSHelper.Send("Utest1Q", new { prop1 = 11, prop2 = "test2" });
 			SQSHelper.Send("Utest1Q", new { prop1 = 22, prop2 = "test3" });
 			SQSHelper.Send("Utest1Q", new { prop1 = 22, prop2 = "test2" });
