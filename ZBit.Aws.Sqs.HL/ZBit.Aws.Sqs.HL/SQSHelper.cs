@@ -8,13 +8,15 @@ using System.Threading;
 using System.Threading.Tasks;
 using Amazon.SQS;
 using Amazon.SQS.Model;
+using log4net;
 using Newtonsoft.Json;
 
 namespace ZBit.Aws.Sqs.HL {
-	public class SQSHelper {
-		protected static ConcurrentDictionary<string, string> g_dict = new ConcurrentDictionary<string, string>();
+	public class SQSHelper : ISqsSubscriber {
+		internal static readonly ILog Logger = LogManager.GetLogger(typeof(SQSHelper));
+		internal static ConcurrentDictionary<string, string> g_dict = new ConcurrentDictionary<string, string>();
 
-		protected bool m_bShouldListen;
+		internal bool m_bShouldListen;
 
 		public static void Send<T>(string sQueueName, T payLoad) {
 			AmazonSQSClient sqs = new AmazonSQSClient();
@@ -29,15 +31,25 @@ namespace ZBit.Aws.Sqs.HL {
 		}
 
 		public void Subscribe<T>(string sQueueName, Func<T, bool> handler, bool bDeleteMsgOnSuccess = true, int iMaxMessagesAtaTime = 10, int iWaitTimeSeconds = 20) {
+			AmazonSQSClient sqs;
+			string sQueueUrl;
+
 			if (null == handler) {
 				throw new ArgumentException("required parameter", "handler");
 			}
 
+			//Logger.DebugFormat("Subscribing to Queue {0}.", sQueueName);
 			m_bShouldListen = true;
 			Task.Run(() => {
 				bool bHandlerRes;
-				AmazonSQSClient sqs = new AmazonSQSClient();
-				string sQueueUrl = GetQueue(sqs, sQueueName);
+				try {
+					sqs = new AmazonSQSClient();
+					sQueueUrl = GetQueue(sqs, sQueueName);
+				} catch (Exception ex) {
+					Logger.ErrorFormat("Error subscribing to Queue [{0}]: {1}", sQueueName, ex);
+					return;
+				}
+				Logger.DebugFormat("Subscribing to Queue: {0}; Url: {1}", sQueueName, sQueueUrl);
 				while (m_bShouldListen) {
 					ReceiveMessageResponse resp = sqs.ReceiveMessage(
 						new ReceiveMessageRequest(sQueueUrl) {
@@ -46,7 +58,7 @@ namespace ZBit.Aws.Sqs.HL {
 						}
 					);
 					if (HttpStatusCode.OK != resp.HttpStatusCode) {
-						//todo log error
+						Logger.ErrorFormat("Error Reciving from queue [{0}]: {1}; {2}", sQueueName, resp.HttpStatusCode, resp.ResponseMetadata);
 						Thread.Sleep(1000);
 						continue;
 					}
@@ -55,8 +67,8 @@ namespace ZBit.Aws.Sqs.HL {
 						bHandlerRes = false;
 						try {
 							bHandlerRes = handler(obj);
-						} catch (Exception) {
-							//todo log error
+						} catch (Exception ex) {
+							Logger.WarnFormat("Error running handler on queue [{0}]: {1}", sQueueName, ex);
 						}
 						if (bHandlerRes) {
 							if (bDeleteMsgOnSuccess) {

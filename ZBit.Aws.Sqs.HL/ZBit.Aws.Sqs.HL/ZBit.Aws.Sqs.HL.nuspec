@@ -16,8 +16,12 @@
 			* It creates a new queue either in Send or in Subscribe if the queue with the given name doesn’t exist yet under your account on AWS.
 			Small and Simple. Requires AWSSDK.SQS, Newtonsof.Json and log4net.
 		</description>
-		<releaseNotes>First Release - only basic functionality.</releaseNotes>
+		<releaseNotes>
+			* Added CLSCompliant.
+			* Added ISqsSubscriber interface to allow for unit-testing with mocking
+			* Added error handling in subscibe
+		</releaseNotes>
 		<copyright>Copyright 2015 gzinger</copyright>
-		<tags>SQS AWS Amason queue event delegate</tags>
+		<tags>SQS AWS Amazon queue event delegate</tags>
 	</metadata>
 </package>
